@@ -26,6 +26,7 @@
  */
 struct anon_vma {
 	spinlock_t lock;	/* Serialize access to vma list */
+	struct anon_vma *root;	/* Root of this anon_vma tree */
 #if defined(CONFIG_KSM) || defined(CONFIG_MIGRATION)
 
 	/*
@@ -111,6 +112,16 @@ static inline void anon_vma_unlock(struct vm_area_struct *vma)
 	struct anon_vma *anon_vma = vma->anon_vma;
 	if (anon_vma)
 		spin_unlock(&anon_vma->lock);
+}
+
+static inline void anon_vma_lock(struct anon_vma *anon_vma)
+{
+	spin_lock(&anon_vma->lock);
+}
+
+static inline void anon_vma_unlock(struct anon_vma *anon_vma)
+{
+	spin_unlock(&anon_vma->lock);
 }
 
 /*
